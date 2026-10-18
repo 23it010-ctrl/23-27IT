@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>IT 2023–2027 Batch · The Journey</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,600;0,800;1,400&family=Caveat:wght@600&display=swap" rel="stylesheet">
+<style>
+:root{--u:10px;--ground:18vh}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:#000;color:#fff;font-family:'Poppins',system-ui,sans-serif;overflow:hidden;-webkit-tap-highlight-color:transparent}
+.screen{position:fixed;inset:0;opacity:0;pointer-events:none;transition:opacity .8s}
+.screen.on{opacity:1;pointer-events:auto}
+button{font-family:inherit}
+
+/* ---------- GATE ---------- */
+#gate{z-index:100;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2.4vh;text-align:center;padding:24px;
+ background:radial-gradient(circle at 50% 35%,#312e81 0,#0f172a 55%,#020617 100%)}
+#gate .badge,.lbadge,.fbadge{width:78px;height:78px;border-radius:20px;display:grid;place-items:center;font-weight:800;font-size:34px;color:#111;
+ background:linear-gradient(135deg,#fbbf24,#fb923c);box-shadow:0 0 40px rgba(251,146,60,.5)}
+#gate h1{font-size:clamp(32px,7vw,78px);font-weight:800;letter-spacing:.05em}
+#gate h1 span,.grad{background:linear-gradient(90deg,#fbbf24,#fb923c,#f472b6);-webkit-background-clip:text;background-clip:text;color:transparent}
+#gate p{opacity:.75;max-width:520px;line-height:1.6;font-size:clamp(13px,1.6vw,16px)}
+.cta{padding:16px 38px;border-radius:999px;border:0;font-weight:700;font-size:18px;color:#111;cursor:pointer;
+ background:linear-gradient(90deg,#fbbf24,#fb923c);box-shadow:0 10px 40px rgba(251,146,60,.45);transition:transform .2s}
+.cta:hover{transform:scale(1.05)}
+#toast{position:fixed;left:50%;bottom:4vh;transform:translateX(-50%);z-index:200;background:rgba(15,23,42,.92);padding:12px 18px;border-radius:12px;font-size:13px;opacity:0;transition:opacity .4s;pointer-events:none;max-width:90vw;text-align:center}
+#toast.show{opacity:1}
+
+/* ---------- LOADER ---------- */
+#loader{z-index:90;background:radial-gradient(circle at 50% 30%,#1e293b,#020617 75%)}
+.lcenter{position:absolute;top:16vh;left:0;right:0;display:flex;flex-direction:column;align-items:center;gap:1.8vh;text-align:center;padding:0 20px}
+.lcenter h2{font-size:clamp(26px,5.5vw,64px);font-weight:800;letter-spacing:.06em}
+.lcenter p{opacity:.8;font-size:clamp(13px,1.8vw,18px)}
+.lbar{width:min(70vw,460px);height:6px;border-radius:6px;background:rgba(255,255,255,.15);overflow:hidden}
+.lbar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#fbbf24,#fb923c)}
+.lrail{position:absolute;left:0;right:0;bottom:14vh;height:9vh}
+.lsl{position:absolute;left:0;right:0;bottom:.6vh;height:2vh;background:linear-gradient(90deg,#57402d 0 38%,transparent 38%) 0 0/calc(var(--u)*3) 100%;animation:slide .5s linear infinite}
+.lrl{position:absolute;left:0;right:0;bottom:1.6vh;height:.45vh;background:#cbd5e1}
+@keyframes slide{to{background-position-x:calc(var(--u)*-3)}}
+.ltrain{position:absolute;bottom:calc(1.9vh - .27 * var(--u));width:calc(var(--u)*50);left:-60vw;will-change:left}
+.ltrain svg,#train svg{display:block;width:100%;height:auto}
+
+/* ---------- TRAIN SVG ---------- */
+.wheel{transform-box:fill-box;transform-origin:center}
+.moving .wheel{animation:spin .4s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.win{filter:drop-shadow(0 0 3px rgba(253,230,138,.85))}
+
+/* ---------- JOURNEY ---------- */
+#journey{z-index:10;overflow:hidden;background:#000}
+.sky{position:absolute;inset:0;opacity:0;transition:opacity 3s}
+.sky.on{opacity:1}
+#stars{position:absolute;inset:0 0 40% 0;opacity:0;transition:opacity 3s}
+#stars i{position:absolute;width:2px;height:2px;border-radius:50%;background:#fff;animation:tw 3s ease-in-out infinite}
+@keyframes tw{50%{opacity:.25}}
+#sun{position:absolute;border-radius:50%;z-index:2;transform:translate(-50%,-50%);
+ transition:left 3s,top 3s,background 3s,box-shadow 3s,width 3s,height 3s}
+#world{position:absolute;inset:0;z-index:3;transition:filter 3s}
+.layer{position:absolute;left:0;right:0;background-repeat:repeat-x;will-change:background-position}
+.clouds{top:5vh;height:26vh;opacity:.8}
+.far{bottom:var(--ground);height:36vh}
+.near{bottom:var(--ground);height:24vh}
+.trees{bottom:var(--ground);height:15vh}
+.far,.near,.trees,.clouds{background-size:auto 100%}
+#ground{position:absolute;left:0;right:0;bottom:0;height:var(--ground);z-index:5;
+ background:linear-gradient(#5b4a3a 0,#2b2118 8%,#14100c 100%)}
+.sleepers{position:absolute;left:0;right:0;top:.5vh;height:2.4vh;
+ background:linear-gradient(90deg,#3a281b 0 38%,transparent 38%) 0 0/calc(var(--u)*3) 100%}
+.railline{position:absolute;left:0;right:0;top:.9vh;height:.45vh;background:#d1d5db;box-shadow:0 .5vh 0 #475569}
+.station{position:absolute;left:0;bottom:calc(var(--ground) - .3vh);width:calc(var(--u)*62);z-index:6;will-change:transform}
+.station svg{display:block;width:100%;height:auto}
+.station .board{filter:drop-shadow(0 0 10px rgba(147,197,253,.7))}
+.station.arrive .board{animation:flick 1.4s steps(1) 1}
+@keyframes flick{0%,18%,22%,60%{opacity:.3}20%,24%,100%{opacity:1}}
+.station .lamp{filter:drop-shadow(0 0 8px #fde047)}
+#train{position:absolute;left:calc(var(--u)*4);width:calc(var(--u)*54);bottom:calc(var(--ground) - .8vh - .3 * var(--u));z-index:9;will-change:transform}
+#beam{position:absolute;left:calc(var(--u)*57);bottom:calc(var(--ground) + var(--u)*.9);width:calc(var(--u)*34);height:calc(var(--u)*5);z-index:9;
+ background:linear-gradient(90deg,rgba(254,240,138,.6),transparent);clip-path:polygon(0 42%,100% 0,100% 100%,0 58%);opacity:0;transition:opacity 3s}
+.sparks b{position:absolute;bottom:2%;width:3px;height:3px;border-radius:50%;background:#fdba74;box-shadow:0 0 6px #fb923c;opacity:0}
+#train.brake .sparks b{animation:spark .5s ease-out infinite}
+@keyframes spark{0%{opacity:1;transform:translate(0,0)}100%{opacity:0;transform:translate(-24px,-16px)}}
+#vig{position:absolute;inset:0;z-index:12;pointer-events:none;background:radial-gradient(ellipse at center,transparent 55%,rgba(0,0,0,.55))}
+
+/* gallery */
+#gallery{position:absolute;inset:0;z-index:15;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2.4vh;padding:9vh 3vw 3vh;
+ background:rgba(2,6,23,.62);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);opacity:0;pointer-events:none;transition:opacity 1.1s}
+#gallery.open{opacity:1}
+.gtitle{text-align:center}
+.gtitle b{display:block;font-size:clamp(44px,10vw,120px);font-weight:800;line-height:1;letter-spacing:.04em;
+ background:linear-gradient(90deg,#fbbf24,#fb923c,#f472b6);-webkit-background-clip:text;background-clip:text;color:transparent;
+ transform:scale(.8);opacity:0;transition:transform 1.2s cubic-bezier(.2,.9,.3,1.2),opacity 1s}
+#gallery.open .gtitle b{transform:none;opacity:1}
+.gtitle em{display:block;margin-top:1vh;font-style:italic;opacity:.85;font-size:clamp(13px,1.9vw,20px)}
+.gtitle small{display:block;letter-spacing:.35em;font-size:clamp(10px,1.3vw,13px);opacity:.7;margin-bottom:1vh}
+#pol{display:flex;flex-wrap:wrap;justify-content:center;gap:2.2vmin;max-width:94vw}
+.pc{width:clamp(104px,18vmin,230px);background:#fff;color:#222;padding:.9vmin .9vmin 0;border-radius:4px;
+ box-shadow:0 14px 36px rgba(0,0,0,.55);opacity:0;transform:translateY(70px) scale(.7) rotate(var(--r));
+ transition:transform .9s cubic-bezier(.2,.9,.3,1.2),opacity .8s;transition-delay:var(--d)}
+#gallery.open .pc{opacity:1;transform:translateY(0) scale(1) rotate(var(--r))}
+#gallery.ready .pc{transition-delay:0s}
+#gallery.open .pc.focus{transform:scale(1.16) rotate(0deg);z-index:3;box-shadow:0 22px 60px rgba(251,146,60,.45)}
+.pc img,.pc .ph{width:100%;aspect-ratio:1/1.05;object-fit:cover;display:block;border-radius:2px}
+.pc .ph{display:grid;place-items:center;text-align:center;font-size:clamp(10px,1.5vmin,13px);color:#fff;font-weight:600;
+ background:linear-gradient(135deg,#6366f1,#ec4899,#f59e0b);padding:6px}
+.pc span{display:block;font-family:'Caveat',cursive;font-size:clamp(14px,2.3vmin,22px);text-align:center;padding:.5vmin 0 .9vmin}
+.slideshow{display:none;position:absolute;inset:0;background:#020617;overflow:hidden}
+#gallery.slideshow-mode{padding:0;gap:0;background:#020617;backdrop-filter:none;-webkit-backdrop-filter:none}
+#gallery.slideshow-mode .gtitle,#gallery.slideshow-mode #pol{display:none}
+#gallery.slideshow-mode .slideshow{display:block}
+.slide-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;opacity:0;transition:opacity .45s ease}
+.slide-photo.loaded{opacity:1}
+.slide-shade{position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(0,0,0,.58),transparent 24%,transparent 66%,rgba(0,0,0,.72))}
+.slide-head,.slide-footer{position:absolute;left:max(16px,env(safe-area-inset-left));right:max(16px,env(safe-area-inset-right));z-index:1;display:flex;align-items:center;justify-content:space-between}
+.slide-head{top:max(16px,env(safe-area-inset-top));font-size:clamp(12px,2vw,17px);font-weight:600;letter-spacing:.12em}
+.slide-fullscreen{width:44px;height:44px;border:1px solid rgba(255,255,255,.55);border-radius:50%;background:rgba(0,0,0,.45);color:#fff;font-size:22px;cursor:pointer}
+.slide-footer{bottom:max(18px,env(safe-area-inset-bottom));gap:10px;flex-wrap:wrap}
+.slide-count{font-size:clamp(12px,1.8vw,16px);font-variant-numeric:tabular-nums}
+.slide-progress{display:flex;flex-basis:100%;gap:5px}
+.slide-progress i{height:3px;flex:1;border-radius:3px;background:rgba(255,255,255,.45)}
+.slide-progress i.active{background:#fbbf24;box-shadow:0 0 8px rgba(251,191,36,.8)}
+@media(max-width:600px){.slide-head,.slide-footer{left:max(12px,env(safe-area-inset-left));right:max(12px,env(safe-area-inset-right))}.slide-footer{gap:7px}.slide-progress{gap:3px}}
+
+/* hud + controls */
+#brand{position:absolute;top:2.6vh;left:3vw;z-index:20;font-weight:800;letter-spacing:.12em;font-size:clamp(10px,1.4vw,14px);opacity:.85}
+#hud{position:absolute;top:5.5vh;left:50%;transform:translateX(-50%);width:min(60vw,520px);z-index:20}
+.hline{height:3px;border-radius:3px;background:rgba(255,255,255,.28);position:relative}
+#hfill{position:absolute;left:0;top:0;bottom:0;width:0;background:linear-gradient(90deg,#fbbf24,#fb923c);border-radius:3px}
+.hdot{position:absolute;top:-5px;transform:translateX(-50%);text-align:center}
+.hdot i{display:block;width:13px;height:13px;border-radius:50%;background:#334155;border:2px solid #94a3b8;margin:0 auto;transition:all .5s}
+.hdot span{display:block;margin-top:5px;font-size:clamp(9px,1.2vw,12px);opacity:.6;transition:opacity .5s}
+.hdot.reach i{background:#fbbf24;border-color:#fff;box-shadow:0 0 12px #fbbf24}
+.hdot.reach span{opacity:1}
+#ctrl{position:fixed;top:2vh;right:2vw;z-index:120;display:flex;gap:8px;opacity:0;transition:opacity .6s}
+#ctrl.on{opacity:1}
+#ctrl button{width:38px;height:38px;border-radius:50%;border:1px solid rgba(255,255,255,.35);background:rgba(0,0,0,.45);color:#fff;font-size:15px;cursor:pointer}
+
+/* ---------- ENDING ---------- */
+#end{z-index:50;background:#000;transition:opacity 2.6s}
+#fx{position:absolute;inset:0;width:100%;height:100%}
+.elines{position:absolute;inset:0;display:grid;place-items:center;padding:0 6vw;text-align:center}
+.el{grid-area:1/1;opacity:0;transform:translateY(16px);transition:opacity 1.8s,transform 1.8s;font-size:clamp(16px,3vw,30px);line-height:1.6;letter-spacing:.06em;color:#e2e8f0}
+.el.on{opacity:1;transform:none}
+.el.big{font-size:clamp(24px,5vw,56px);font-weight:600;letter-spacing:.03em}
+.el.yrs{letter-spacing:.5em;font-weight:400}
+.el.yrs.on{opacity:.8}
+.final{display:flex;flex-direction:column;align-items:center;gap:2.4vh}
+.final h1{font-size:clamp(28px,6.5vw,78px);font-weight:800;letter-spacing:.08em;text-shadow:0 0 30px rgba(251,191,36,.55),0 0 70px rgba(251,146,60,.35)}
+.so{letter-spacing:.7em;font-size:clamp(12px,2vw,20px);color:#fbbf24;opacity:0;transition:opacity 2.2s}
+.so.on{opacity:1}
+.cur{animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.tail{position:absolute;left:0;right:0;bottom:11vh;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.18),transparent)}
+.tail i{position:absolute;top:-3px;left:0;width:7px;height:7px;border-radius:50%;background:#ef4444;box-shadow:0 0 14px 4px rgba(239,68,68,.7);opacity:0}
+.final h1 small{display:block;font-size:.5em;letter-spacing:.3em;color:#fbbf24;margin-top:.5vh}
+.so.on{opacity:1}
+#credits{position:absolute;inset:0;overflow:hidden;opacity:0;transition:opacity 2s;pointer-events:none}
+#credits.on{opacity:1}
+.cin{position:absolute;left:0;right:0;top:0;text-align:center;padding:0 6vw;will-change:transform}
+.cin .ch{font-size:clamp(11px,1.6vw,15px);letter-spacing:.5em;color:#fbbf24;margin-bottom:1.2vh}
+.cin h2{font-size:clamp(26px,5vw,56px);font-weight:800;letter-spacing:.06em;line-height:1.15;margin-bottom:1vh;
+ background:linear-gradient(90deg,#fbbf24,#fb923c,#f472b6);-webkit-background-clip:text;background-clip:text;color:transparent}
+.cin .cs{font-size:clamp(12px,1.8vw,18px);opacity:.75;letter-spacing:.2em;margin-bottom:7vh}
+.cin .nm{font-size:clamp(18px,3.2vw,34px);font-weight:600;letter-spacing:.06em;color:#f1f5f9;margin:0 0 3.4vh;text-shadow:0 0 18px rgba(251,191,36,.25)}
+.cin .cf{margin-top:9vh;font-size:clamp(16px,2.6vw,28px);line-height:1.7;color:#e2e8f0;letter-spacing:.06em}
+.cin .cf b{display:block;font-size:clamp(22px,4.2vw,46px);letter-spacing:.08em;color:#fbbf24;margin-bottom:1vh}
+#replay{position:absolute;bottom:4vh;left:50%;transform:translateX(-50%);padding:10px 24px;border-radius:999px;border:1px solid rgba(255,255,255,.4);
+ background:transparent;color:#fff;font-size:14px;cursor:pointer;opacity:0;pointer-events:none;transition:opacity 2s}
+#replay.show{opacity:.85;pointer-events:auto}
+</style>
+</head>
+<body>
+
+
+<!-- GATE -->
+<div id="gate" class="screen on">
+  <div class="badge">IT</div>
+  <h1><span>2023 – 2027</span><br>BATCH</h1>
+  <p>Naalu varusha payanam — oru train journey-a paakalaam. Start button-ai press pannunga!</p>
+  <button class="cta" id="startBtn">🚆 Start the Journey</button>
+</div>
+
+<!-- LOADER -->
+<div id="loader" class="screen">
+  <div class="lcenter">
+    <div class="lbadge">IT</div>
+    <h2 class="grad" id="ltitle">IT 2023 – 2027 BATCH</h2>
+    <p><span id="lmsg">Platform-ku varom…</span> <b id="lpct">0%</b></p>
+    <div class="lbar"><i id="lfill"></i></div>
+  </div>
+  <div class="lrail"><div class="lsl"></div><div class="lrl"></div><div class="ltrain moving" id="ltrain"></div></div>
+</div>
+
+<!-- JOURNEY -->
+<div id="journey" class="screen">
+  <div id="skies"></div>
+  <div id="stars"></div>
+  <div id="sun"></div>
+  <div id="world">
+    <div class="layer clouds" id="L_clouds"></div>
+    <div class="layer far" id="L_far"></div>
+    <div class="layer near" id="L_near"></div>
+    <div class="layer trees" id="L_trees"></div>
+    <div id="ground"><div class="sleepers" id="L_sleep"></div><div class="railline"></div></div>
+    <div class="station" id="stA"></div>
+    <div class="station" id="stB"></div>
+    <div id="train"></div>
+    <div id="beam"></div>
+  </div>
+  <div id="vig"></div>
+  <div id="gallery">
+    <div class="gtitle"><small id="gsmall"></small><b id="gyear">2023</b><em id="gsub"></em></div>
+    <div id="pol"></div>
+    <section class="slideshow" id="year2026Slideshow" aria-label="2026 memories slideshow" aria-hidden="true">
+      <img class="slide-photo" id="slidePhoto" alt="">
+      <div class="slide-shade"></div>
+      <div class="slide-head"><span>2026 · FINAL YEAR</span><button class="slide-fullscreen" id="slideFullscreen" type="button" aria-label="Toggle fullscreen" title="Toggle fullscreen">⛶</button></div>
+      <div class="slide-footer"><span class="slide-count" id="slideCount" aria-live="polite"></span><div class="slide-progress" id="slideProgress" aria-hidden="true"></div></div>
+    </section>
+  </div>
+  <div id="brand">IT · 2023–2027</div>
+  <div id="hud"><div class="hline"><div id="hfill"></div></div></div>
+</div>
+
+<!-- ENDING -->
+<div id="end" class="screen">
+  <canvas id="fx"></canvas>
+  <div class="elines">
+    <p class="el yrs" data-a="2" data-b="8.8">2 0 2 3 &nbsp;—&nbsp; 2 0 2 7</p>
+    <p class="el big" data-a="8.8" data-b="16">Naalu varusham.<br>Oru payanam.</p>
+    <p class="el big" data-a="16" data-b="23.2">Friends-a vandhom,<br>family-a pogirom.</p>
+    <p class="el" data-a="23.2" data-b="29.6">Thank you, College. Thank you, IT. ❤</p>
+    <div class="el final" data-a="29.6" data-b="48">
+      <div class="fbadge">IT</div>
+      <h1>2023 – 2027<small>IT BATCH</small></h1>
+      <div class="so">SIGN OFF<span class="cur">_</span></div>
+    </div>
+  </div>
+  <div id="credits"><div class="cin" id="cin">
+    <div class="ch">THE BATCH</div>
+    <h2>IT 2023 – 2027</h2>
+    <div class="cs">GRADUATING BATCH</div>
+    <div class="nm">V.Aarthi</div>
+    <div class="nm">A.Athilakshmi</div>
+    <div class="nm">S.Abi Dhara</div>
+    <div class="nm">M.Alagar Raj</div>
+    <div class="nm">I.Archana</div>
+    <div class="nm">K.Aruna</div>
+    <div class="nm">T.Athilakshmi</div>
+    <div class="nm">V.Balachandar</div>
+    <div class="nm">M.Gowtham Sakkaravaruthi</div>
+    <div class="nm">R.K.Harihara sudhan</div>
+    <div class="nm">M.Hariharan</div>
+    <div class="nm">S.R.Janani</div>
+    <div class="nm">J.Jeya vignesh</div>
+    <div class="nm">P.Krishna kumar</div>
+    <div class="nm">Nathira muntaj</div>
+    <div class="nm">V.Navaneethan</div>
+    <div class="nm">R.Naveen Prasath</div>
+    <div class="nm">V.Puli pandi</div>
+    <div class="nm">B.Ram prasath</div>
+    <div class="nm">A.Raveena</div>
+    <div class="nm">G.Sahana</div>
+    <div class="nm">A.Saravanan</div>
+    <div class="nm">K.Shunmuga Priya</div>
+    <div class="nm">K.Suba Lakshmi</div>
+    <div class="nm">S.Suresh Kumar</div>
+    <div class="nm">G.Swetha</div>
+    <div class="nm">V.Velmurugan</div>
+    <div class="nm">V.Venkat Madhav</div>
+    <div class="nm">G.Vidhya</div>
+    <div class="nm">A.Vignesh Saurav</div>
+    <div class="nm">Joesph Victor Raj</div>
+    <div class="cf"><b>IT 2023 – 2027 BATCH</b>Forever IT family ❤<br>Sign Off</div>
+  </div></div>
+  <div class="tail"><i id="tailDot"></i></div>
+  <button id="replay">↻ Replay the journey</button>
+</div>
+
+<div id="ctrl"><button id="pauseBtn" title="Pause / Play">⏸</button><button id="muteBtn" title="Mute">🔊</button></div>
+<div id="toast"></div>
+
+<script>
+(() => {
+/* =====================  EDIT HERE  ===================== */
+const CONFIG = {
+  loaderSec: 5,                 // loading page time (seconds)
+  loaderTitle: 'IT 2023 – 2027 BATCH',
+  journeySec: 270,
+  photoCount: 6,                // photos per year  ->  photos/2023/1.jpg ... 6.jpg
+  photoFolder: 'photos',
+  photoFolders: { 2026: '2026img' },
+  photoFiles: {
+    2026: [
+      '1000054104.jpg', '1000054276.jpg', '1000079080.jpg', '1000079081.jpg',
+      '1000079415.jpg', '1000079416.jpg', '1000079996.jpg', '1000083806.jpg',
+      '1000083807.jpg', '1000083808.jpg'
+    ]
+  },
+  years: [2023, 2024, 2025, 2026, 2027],
+  small:  ['STATION 1', 'STATION 2', 'STATION 3', 'STATION 4', 'LAST STATION'],
+  titles: ['Where it all began', 'Getting comfortable', 'Peak masti', 'The final lap', 'The last station'],
+  subs:   ['First day · New faces · Big dreams', 'Nanbargal aana year', 'Fun · Fights · Friendship',
+           'Placements · Projects · Pressure', 'Goodbye illa… see you soon'],
+  captions: {                   // optional: per-year captions (else "Memory n")
+    2023: ['Day one','New faces','First bench','Lab days','Canteen gang','Fresher\'s'],
+    2024: ['Second year','Class gang','Fest time','Late nights','Trip time','Memories'],
+    2025: ['Peak masti','Project mode','Inplant','Bunk plan','Celebration','Squad'],
+    2027: ['Graduation','Last day','Group photo','Tears & smiles','Forever','IT family']
+  }
+};
+/* ======================================================= */
+
+const $ = s => document.querySelector(s);
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const lerp = (a, b, t) => a + (b - a) * t;
+const Y = CONFIG.years;
+
+let paused = false, muted = false, fb = 0, last = 0, running = false;
+let U = 10, L = 2000, Xf = 340;
+let curYear = -1, galleryOpen = false, focusK = -1, slideIndex = -1, rdyTimer = null;
+let credH = 0, credIH = 0;
+let jv = 0, jp = 0, ji = 0;   // journey speed / progress / year (for train sound)
+
+function setU() {
+  U = Math.max(innerWidth / 100, innerHeight * 0.0055);
+  document.documentElement.style.setProperty('--u', U + 'px');
+  L = 2.4 * Math.max(innerWidth, 100 * U);
+  Xf = 34 * U;
+  fxResize(); credH = 0;
+}
+
+/* ---------- SVG art ---------- */
+function trainSVG() {
+  const wheel = cx => `<g class="wheel"><circle cx="${cx}" cy="122" r="12" fill="#0f172a" stroke="#cbd5e1" stroke-width="2.5"/><line x1="${cx-9}" y1="122" x2="${cx+9}" y2="122" stroke="#cbd5e1" stroke-width="2"/><line x1="${cx}" y1="113" x2="${cx}" y2="131" stroke="#cbd5e1" stroke-width="2"/></g>`;
+  let s = '<svg viewBox="0 0 1100 140" xmlns="http://www.w3.org/2000/svg">';
+  for (let k = 0; k < 4; k++) {
+    let w = '';
+    for (let j = 0; j < 6; j++) w += `<rect class="win" x="${16 + j * 29}" y="40" width="20" height="28" rx="4" fill="#fde68a"/>`;
+    s += `<g transform="translate(${k * 200},0)"><rect x="2" y="22" width="192" height="94" rx="12" fill="#1d4ed8"/><rect x="2" y="22" width="192" height="10" rx="5" fill="#1e3a8a"/><rect x="2" y="80" width="192" height="9" fill="#f59e0b"/>${w}<rect x="10" y="112" width="176" height="8" rx="3" fill="#0f172a"/>${wheel(44)}${wheel(152)}<rect x="192" y="96" width="12" height="7" fill="#0f172a"/></g>`;
+  }
+  s += `<path d="M800 116 V36 Q800 24 814 24 H1034 Q1080 30 1094 76 L1098 116 Z" fill="#f59e0b"/><rect x="800" y="72" width="298" height="12" fill="#1d4ed8"/><rect class="win" x="822" y="40" width="44" height="26" rx="4" fill="#bae6fd"/><path d="M1038 36 H1066 L1084 66 H1038Z" fill="#bae6fd"/><rect x="900" y="12" width="70" height="12" rx="4" fill="#334155"/><rect x="800" y="112" width="298" height="8" fill="#0f172a"/><circle cx="1090" cy="96" r="7" fill="#fef08a"/>${wheel(840)}${wheel(930)}${wheel(1030)}`;
+  return s + '</svg>';
+}
+
+function stationSVG() {
+  return `<svg viewBox="0 0 620 330" xmlns="http://www.w3.org/2000/svg">
+  <rect x="0" y="300" width="620" height="30" fill="#475569"/><rect x="0" y="296" width="620" height="6" fill="#94a3b8"/>
+  <rect x="40" y="170" width="540" height="128" fill="#9a3412"/>
+  <path d="M30 156 L62 138 H558 L590 156Z" fill="#374151"/><rect x="30" y="154" width="560" height="18" fill="#1f2937"/>
+  <rect x="200" y="114" width="6" height="30" fill="#cbd5e1"/><rect x="414" y="114" width="6" height="30" fill="#cbd5e1"/>
+  <g class="board"><rect x="150" y="28" width="320" height="90" rx="10" fill="#0b3b8c" stroke="#fff" stroke-width="4"/>
+  <text x="310" y="58" text-anchor="middle" font-size="16" letter-spacing="7" fill="#bfdbfe" font-family="Poppins,sans-serif">STATION</text>
+  <text class="yr" x="310" y="106" text-anchor="middle" font-size="52" font-weight="800" fill="#fff" font-family="Poppins,sans-serif">2023</text></g>
+  <rect class="win" x="60" y="196" width="56" height="64" rx="4" fill="#fde68a"/><rect class="win" x="150" y="196" width="56" height="64" rx="4" fill="#fde68a"/>
+  <rect class="win" x="414" y="196" width="56" height="64" rx="4" fill="#fde68a"/><rect class="win" x="504" y="196" width="56" height="64" rx="4" fill="#fde68a"/>
+  <path d="M262 298 V232 Q310 196 358 232 V298Z" fill="#451a03"/>
+  <circle cx="310" cy="188" r="14" fill="#fff" stroke="#111" stroke-width="2"/><line x1="310" y1="188" x2="310" y2="179" stroke="#111" stroke-width="2"/><line x1="310" y1="188" x2="317" y2="190" stroke="#111" stroke-width="2"/>
+  <rect x="18" y="208" width="4" height="92" fill="#94a3b8"/><circle class="lamp" cx="20" cy="204" r="9" fill="#fef08a"/>
+  <rect x="598" y="208" width="4" height="92" fill="#94a3b8"/><circle class="lamp" cx="600" cy="204" r="9" fill="#fef08a"/>
+  </svg>`;
+}
+
+/* ---------- scene setup ---------- */
+const SKY = [
+  'linear-gradient(#1e1b4b,#9a3412 55%,#fdba74)',
+  'linear-gradient(#0ea5e9,#7dd3fc 60%,#e0f2fe)',
+  'linear-gradient(#1d4ed8,#60a5fa 60%,#bfdbfe)',
+  'linear-gradient(#312e81,#be185d 55%,#fb923c)',
+  'linear-gradient(#020617,#0f172a 55%,#1e1b4b)'
+];
+const SUN = [
+  { l: 14, t: 56, bg: '#fb923c', s: 9,  sh: '0 0 80px 30px rgba(251,146,60,.55)' },
+  { l: 20, t: 24, bg: '#fde047', s: 8,  sh: '0 0 80px 28px rgba(253,224,71,.5)' },
+  { l: 50, t: 11, bg: '#fffbd0', s: 8,  sh: '0 0 90px 34px rgba(255,251,200,.55)' },
+  { l: 82, t: 52, bg: '#f97316', s: 10, sh: '0 0 100px 40px rgba(249,115,22,.6)' },
+  { l: 80, t: 15, bg: '#e2e8f0', s: 6,  sh: '0 0 60px 20px rgba(226,232,240,.4)' }
+];
+const TONE = [
+  'sepia(.35) saturate(1.3) brightness(.95)', 'none', 'saturate(1.1) brightness(1.05)',
+  'sepia(.3) hue-rotate(-20deg) saturate(1.3) brightness(.85)', 'brightness(.5) saturate(.8) hue-rotate(10deg)'
+];
+const STARS = [.25, 0, 0, .2, 1];
+const BEAM = [.15, 0, 0, .15, .8];
+
+function svgBg(el, svg) { el.style.backgroundImage = `url("data:image/svg+xml,${encodeURIComponent(svg)}")`; }
+
+function buildScene() {
+  $('#skies').innerHTML = SKY.map((g, i) => `<div class="sky" style="background:${g}"></div>`).join('');
+  let st = '';
+  for (let i = 0; i < 90; i++) st += `<i style="left:${Math.random()*100}%;top:${Math.random()*100}%;animation-delay:${(Math.random()*3).toFixed(2)}s;opacity:${(.4+Math.random()*.6).toFixed(2)}"></i>`;
+  $('#stars').innerHTML = st;
+
+  svgBg($('#L_far'), `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 200' preserveAspectRatio='none'><path d='M0 150 Q100 50 200 118 T400 96 T600 84 T800 150 V200 H0Z' fill='#6475a8'/></svg>`);
+  svgBg($('#L_near'), `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 200' preserveAspectRatio='none'><path d='M0 130 Q150 36 300 108 T600 88 T800 130 V200 H0Z' fill='#3b4a7a'/></svg>`);
+  let pines = '';
+  [24, 70, 120, 188, 240, 300, 352, 410, 470, 530, 576].forEach((x, k) => {
+    const h = 54 + (k * 17) % 34;
+    pines += `<polygon points='${x-17},120 ${x},${120-h} ${x+17},120' fill='${k%2?'#0f3d2a':'#14532d'}'/><polygon points='${x-13},${120-h*.45} ${x},${120-h-12} ${x+13},${120-h*.45}' fill='${k%2?'#14532d':'#166534'}'/>`;
+  });
+  svgBg($('#L_trees'), `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 120' preserveAspectRatio='none'>${pines}<rect y='112' width='600' height='8' fill='#0f3d2a'/></svg>`);
+  svgBg($('#L_clouds'), `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 220'><g fill='white' opacity='.85'>
+    <g transform='translate(160,80)'><ellipse rx='64' ry='22'/><ellipse cx='40' cy='-10' rx='42' ry='20'/><ellipse cx='-42' cy='6' rx='36' ry='16'/></g>
+    <g transform='translate(520,50)'><ellipse rx='80' ry='24'/><ellipse cx='-30' cy='-12' rx='44' ry='20'/><ellipse cx='46' cy='6' rx='40' ry='16'/></g>
+    <g transform='translate(900,110)'><ellipse rx='60' ry='20'/><ellipse cx='36' cy='-10' rx='40' ry='18'/></g>
+    <g transform='translate(1100,40)'><ellipse rx='50' ry='16'/></g></g></svg>`);
+
+  $('#train').innerHTML = `<div>${trainSVG()}</div><div class="sparks">${'<b></b>'.repeat(8)}</div>`;
+  $('#train').querySelectorAll('.sparks b').forEach((b, k) => { b.style.left = (70 + k * 3.4) + '%'; b.style.animationDelay = (k * .06) + 's'; });
+  $('#ltrain').innerHTML = trainSVG();
+  $('#stA').innerHTML = stationSVG();
+  $('#stB').innerHTML = stationSVG();
+  $('#ltitle').textContent = CONFIG.loaderTitle;
+
+  let h = '';
+  Y.forEach((y, j) => h += `<div class="hdot" style="left:${j * 25}%"><i></i><span>${y}</span></div>`);
+  $('#hud .hline').insertAdjacentHTML('beforeend', h);
+}
+
+/* ---------- gallery ---------- */
+function photoEl(year, n, cap) {
+  const fig = document.createElement('div');
+  fig.className = 'pc';
+  fig.style.setProperty('--r', (((n * 37) % 11) - 5) * 0.9 + 'deg');
+  fig.style.setProperty('--d', (0.5 + n * 0.38) + 's');
+  const files = CONFIG.photoFiles[year];
+  if (!files) {
+    const ph = document.createElement('div');
+    ph.className = 'ph';
+    ph.innerHTML = `${year}<br>photo ${n + 1}<br>add pannunga`;
+    fig.appendChild(ph);
+  } else {
+    const img = new Image();
+    img.alt = cap;
+    img.src = photoUrl(year, files[n] || `${n + 1}.jpg`);
+    img.onerror = () => {
+      const ph = document.createElement('div');
+      ph.className = 'ph';
+      ph.innerHTML = `${year}<br>photo ${n + 1}<br>add pannunga`;
+      img.replaceWith(ph);
+    };
+    fig.appendChild(img);
+  }
+  const sp = document.createElement('span'); sp.textContent = cap; fig.appendChild(sp);
+  return fig;
+}
+
+function photoUrl(year, filename) {
+  const folder = CONFIG.photoFolders[year] || `${CONFIG.photoFolder}/${year}`;
+  return new URL(`${folder}/${encodeURIComponent(filename)}`, document.baseURI).href;
+}
+
+function setYear(i) {
+  curYear = i;
+  document.querySelectorAll('.sky').forEach((s, k) => s.classList.toggle('on', k === i));
+  const s = SUN[i], sun = $('#sun');
+  sun.style.left = s.l + '%'; sun.style.top = s.t + '%'; sun.style.background = s.bg;
+  sun.style.boxShadow = s.sh; sun.style.width = sun.style.height = s.s + 'vmin';
+  $('#stars').style.opacity = STARS[i];
+  $('#world').style.filter = TONE[i];
+  $('#beam').style.opacity = BEAM[i];
+  $('#stB .yr').textContent = Y[i];
+  $('#stA .yr').textContent = i > 0 ? Y[i - 1] : '';
+  $('#stA').style.visibility = i > 0 ? 'visible' : 'hidden';
+  $('#gyear').textContent = Y[i];
+  $('#gsmall').textContent = CONFIG.small[i];
+  $('#gsub').textContent = CONFIG.titles[i] + ' — ' + CONFIG.subs[i];
+  const slideshow = i === 3;
+  $('#gallery').classList.toggle('slideshow-mode', slideshow);
+  $('#year2026Slideshow').setAttribute('aria-hidden', String(!slideshow));
+  slideIndex = -1;
+  const pol = $('#pol'); pol.innerHTML = '';
+  const caps = CONFIG.captions[Y[i]] || [];
+  const photoCount = CONFIG.photoFiles[Y[i]] ? CONFIG.photoFiles[Y[i]].length : CONFIG.photoCount;
+  for (let n = 0; n < (slideshow ? 0 : photoCount); n++) pol.appendChild(photoEl(Y[i], n, caps[n] || `Memory ${n + 1}`));
+  $('#slideProgress').replaceChildren(...CONFIG.photoFiles[2026].map(() => document.createElement('i')));
+  galleryOpen = false; focusK = -1;
+  $('#gallery').classList.remove('open', 'ready');
+}
+
+function show2026Photo(index) {
+  if (index === slideIndex) return;
+  slideIndex = index;
+  const files = CONFIG.photoFiles[2026];
+  const image = $('#slidePhoto');
+  image.classList.remove('loaded');
+  image.alt = `2026 memory ${index + 1}`;
+  image.onload = () => image.classList.add('loaded');
+  image.onerror = () => {
+    image.classList.remove('loaded');
+    toast(`2026 photo could not be loaded: ${files[index]}`);
+  };
+  image.src = photoUrl(2026, files[index]);
+  $('#slideCount').textContent = `${index + 1} / ${files.length}`;
+  $('#slideProgress').querySelectorAll('i').forEach((bar, i) => bar.classList.toggle('active', i <= index));
+}
+
+/* ---------- loader ---------- */
+const MSGS = ['Platform-ku varom…', 'Tickets check pannurom…', 'Memories load aagudhu…', 'Train kilambuthu… 🚆'];
+function runLoader(p, t) {
+  p = clamp(p);
+  $('#lpct').textContent = Math.floor(p * 100) + '%';
+  $('#lfill').style.width = (p * 100) + '%';
+  $('#lmsg').textContent = MSGS[Math.min(3, Math.floor(p * 4))];
+  const tw = 50 * U, e = p * p * (3 - 2 * p);
+  const tr = $('#ltrain');
+  tr.style.left = (-tw + e * (innerWidth + tw)) + 'px';
+  tr.style.transform = `translateY(${Math.sin(t * 38) * 1.1}px)`;
+}
+
+/* ---------- journey ---------- */
+const easeOut = p => 1 - Math.pow(1 - p, 3);
+const easeIO = p => (1 - Math.cos(Math.PI * p)) / 2;
+
+function runJourney(tl, span, t) {
+  const E = Math.min(85, Math.max(60, span * 0.3));   // ending length: lines + sign off + credits
+  const yearsSpan = span - E, D = yearsSpan / 5;
+  let i, local, e = 0;
+  if (tl < yearsSpan) { i = Math.min(4, Math.floor(tl / D)); local = tl - i * D; }
+  else { i = 4; local = D; e = tl - yearsSpan; }
+  if (i !== curYear) setYear(i);
+
+  const travel = Math.min(9, D * 0.3);
+  const p = clamp(local / travel);
+  const f = pr => i === 0 ? easeOut(pr) : easeIO(pr);
+  const dist = L * f(p);
+  const v = clamp((f(Math.min(1, p + .01)) - f(Math.max(0, p - .01))) / .02 * .5, 0, 1.2);
+  const cum = i * L + dist;
+  jv = clamp(v); jp = p; ji = i;
+
+  $('#L_clouds').style.backgroundPositionX = (-cum * .08) + 'px';
+  $('#L_far').style.backgroundPositionX = (-cum * .2) + 'px';
+  $('#L_near').style.backgroundPositionX = (-cum * .4) + 'px';
+  $('#L_trees').style.backgroundPositionX = (-cum * .75) + 'px';
+  $('#L_sleep').style.backgroundPositionX = (-cum) + 'px';
+  $('#stB').style.transform = `translateX(${Xf + (L - dist)}px)`;
+  $('#stA').style.transform = `translateX(${Xf - dist}px)`;
+  $('#stB').classList.toggle('arrive', p >= .99);
+
+  const tr = $('#train');
+  tr.classList.toggle('moving', p < .985 && v > .02);
+  tr.classList.toggle('brake', p > .78 && p < .985);
+  tr.style.transform = `translateY(${Math.sin(t * 40) * 1.2 * clamp(v)}px)`;
+
+  // gallery
+  const open = e === 0 && local > travel + 0.8 && local < D - 1.3;
+  const gal = $('#gallery');
+  if (open !== galleryOpen) {
+    galleryOpen = open; gal.classList.toggle('open', open);
+    gal.classList.toggle('slideshow-mode', open && i === 3);
+    $('#year2026Slideshow').setAttribute('aria-hidden', String(!(open && i === 3)));
+    clearTimeout(rdyTimer);
+    if (open) rdyTimer = setTimeout(() => gal.classList.add('ready'), 4500); else gal.classList.remove('ready');
+  }
+  if (open) {
+    if (i === 3) {
+      const photoCount = CONFIG.photoFiles[2026].length;
+      const photoDuration = (D - travel - 2.1) / photoCount;
+      const k = Math.min(photoCount - 1, Math.floor((local - travel - 0.8) / photoDuration));
+      show2026Photo(k);
+    } else {
+      const k = Math.floor((local - travel - 0.8) / 2.6) % CONFIG.photoCount;
+      if (k !== focusK) { focusK = k; [...$('#pol').children].forEach((c, n) => c.classList.toggle('focus', n === k)); }
+    }
+  }
+
+  // HUD
+  $('#hfill').style.width = (i === 0 ? 0 : ((i - 1 + p) / 4) * 100) + '%';
+  document.querySelectorAll('.hdot').forEach((d, j) => d.classList.toggle('reach', j === 0 || j < i || (j === i && p >= .98)));
+
+  // ending
+  const endOn = tl >= yearsSpan - 0.5;
+  $('#end').classList.toggle('on', endOn);
+  document.querySelectorAll('#end .el').forEach(el => {
+    el.classList.toggle('on', e >= +el.dataset.a && e < +el.dataset.b);
+  });
+  $('#end .so').classList.toggle('on', e >= 35.5 && e < 48);
+  // end credits: scroll the names up, stop with the last block on screen
+  const CR0 = 47, CR1 = Math.max(CR0 + 20, E - 7);
+  $('#credits').classList.toggle('on', e >= CR0 - 0.5);
+  const cin = $('#cin');
+  if (!credH || credIH !== innerHeight) { credH = cin.offsetHeight; credIH = innerHeight; }
+  const cp = clamp((e - CR0) / (CR1 - CR0));
+  cin.style.transform = `translateY(${innerHeight - cp * (innerHeight + credH - innerHeight * .62)}px)`;
+  const dot = $('#tailDot');
+  const td = clamp((e - 24) / 22);
+  dot.style.opacity = td > 0 ? 1 - Math.max(0, td - .85) / .15 : 0;
+  dot.style.left = (lerp(8, 104, td)) + '%';
+  fxOn = endOn;
+}
+
+/* ---------- ending particles ---------- */
+const cv = $('#fx'), cx = cv.getContext('2d');
+let fxOn = false, parts = [];
+function fxResize() {
+  const d = Math.min(2, devicePixelRatio || 1);
+  cv.width = innerWidth * d; cv.height = innerHeight * d; cx.setTransform(d, 0, 0, d, 0, 0);
+  parts = Array.from({ length: 70 }, () => ({
+    x: Math.random() * innerWidth, y: Math.random() * innerHeight, r: .8 + Math.random() * 2.2,
+    vx: (Math.random() - .5) * .25, vy: -.1 - Math.random() * .35, ph: Math.random() * 6.28
+  }));
+}
+function fxDraw() {
+  cx.clearRect(0, 0, innerWidth, innerHeight);
+  if (!fxOn) return;
+  cx.shadowBlur = 12; cx.shadowColor = 'rgba(251,191,36,.9)';
+  for (const q of parts) {
+    q.x += q.vx; q.y += q.vy; q.ph += .03;
+    if (q.y < -10) { q.y = innerHeight + 10; q.x = Math.random() * innerWidth; }
+    cx.fillStyle = `rgba(253,224,150,${.2 + .35 * Math.sin(q.ph) ** 2})`;
+    cx.beginPath(); cx.arc(q.x, q.y, q.r, 0, 6.283); cx.fill();
+  }
+}
+
+/* ---------- train sound (synthesised, no files needed) ---------- */
+let AC = null, TG = null, rumbleG = null, screechG = null, screechF = null, whiteBuf = null, clackPhase = 0;
+const fired = new Set();
+function initSound() {
+  try {
+    AC = new (window.AudioContext || window.webkitAudioContext)();
+    if (AC.state === 'suspended') AC.resume();
+    TG = AC.createGain(); TG.gain.value = 1; TG.connect(AC.destination);
+    const len = AC.sampleRate * 2;
+    whiteBuf = AC.createBuffer(1, len, AC.sampleRate);
+    const brownBuf = AC.createBuffer(1, len, AC.sampleRate);
+    const w = whiteBuf.getChannelData(0), b = brownBuf.getChannelData(0);
+    let lastB = 0;
+    for (let k = 0; k < len; k++) { const r = Math.random() * 2 - 1; w[k] = r; lastB = (lastB + 0.02 * r) / 1.02; b[k] = lastB * 3.5; }
+    // low rumble of the engine / track
+    const rs = AC.createBufferSource(); rs.buffer = brownBuf; rs.loop = true;
+    const rl = AC.createBiquadFilter(); rl.type = 'lowpass'; rl.frequency.value = 170;
+    rumbleG = AC.createGain(); rumbleG.gain.value = 0;
+    rs.connect(rl); rl.connect(rumbleG); rumbleG.connect(TG); rs.start();
+    // brake screech
+    const ss = AC.createBufferSource(); ss.buffer = whiteBuf; ss.loop = true;
+    screechF = AC.createBiquadFilter(); screechF.type = 'bandpass'; screechF.frequency.value = 3200; screechF.Q.value = 7;
+    screechG = AC.createGain(); screechG.gain.value = 0;
+    ss.connect(screechF); screechF.connect(screechG); screechG.connect(TG); ss.start();
+  } catch (e) { AC = null; }
+}
+function clack(vol) {
+  const n = AC.currentTime;
+  const s = AC.createBufferSource(); s.buffer = whiteBuf;
+  const bp = AC.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 650 + Math.random() * 500; bp.Q.value = 1.1;
+  const g = AC.createGain();
+  g.gain.setValueAtTime(0, n); g.gain.linearRampToValueAtTime(vol, n + .004); g.gain.exponentialRampToValueAtTime(.001, n + .075);
+  s.connect(bp); bp.connect(g); g.connect(TG); s.start(n, Math.random() * 1.5); s.stop(n + .1);
+  const o = AC.createOscillator(), og = AC.createGain();
+  o.frequency.setValueAtTime(95, n); o.frequency.exponentialRampToValueAtTime(48, n + .09);
+  og.gain.setValueAtTime(vol * .9, n); og.gain.exponentialRampToValueAtTime(.001, n + .1);
+  o.connect(og); og.connect(TG); o.start(n); o.stop(n + .12);
+}
+function horn(dur) {
+  const n = AC.currentTime;
+  const g = AC.createGain(), lp = AC.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 1400;
+  g.gain.setValueAtTime(0, n); g.gain.linearRampToValueAtTime(.2, n + .1);
+  g.gain.setValueAtTime(.2, n + dur - .25); g.gain.linearRampToValueAtTime(0, n + dur);
+  [349, 440].forEach(f => {
+    const o = AC.createOscillator(); o.type = 'sawtooth'; o.frequency.setValueAtTime(f * .96, n); o.frequency.linearRampToValueAtTime(f, n + .15);
+    o.connect(lp); o.start(n); o.stop(n + dur + .05);
+  });
+  lp.connect(g); g.connect(TG);
+}
+function ding() {
+  const n = AC.currentTime;
+  [[880, 0], [660, .55]].forEach(([f, d]) => {
+    const o = AC.createOscillator(), g = AC.createGain(); o.type = 'sine'; o.frequency.value = f;
+    g.gain.setValueAtTime(0, n + d); g.gain.linearRampToValueAtTime(.16, n + d + .02); g.gain.exponentialRampToValueAtTime(.001, n + d + 1.4);
+    o.connect(g); g.connect(TG); o.start(n + d); o.stop(n + d + 1.5);
+  });
+}
+function updateSound(t, dt) {
+  if (!AC || !TG) return;
+  const LS = CONFIG.loaderSec, now = AC.currentTime;
+  const soundMuted = muted || isPaused();
+  TG.gain.setTargetAtTime(soundMuted ? 0 : 1, now, .1);
+  let v = t < LS ? .8 : jv;
+  if (fxOn) v = 0;                       // ending: silence on the black screen
+  const idle = fxOn ? 0 : .025;
+  rumbleG.gain.setTargetAtTime(idle + .2 * v, now, .15);
+  const brake = t >= LS && !fxOn && jp > .78 && jp < .985;
+  screechG.gain.setTargetAtTime(brake ? .05 * (1 - (jp - .78) / .21) : 0, now, .08);
+  if (brake) screechF.frequency.setTargetAtTime(3400 - 1800 * ((jp - .78) / .21), now, .1);
+  if (!soundMuted && v > .06) {
+    clackPhase += dt * (1.6 + 6.5 * v);
+    while (clackPhase >= 1) {
+      clackPhase -= 1;
+      const vol = .12 + .16 * v;
+      clack(vol); setTimeout(() => AC && clack(vol * .8), 75);
+    }
+  }
+  if (soundMuted) return;
+  if (t > .4 && !fired.has('start')) { fired.add('start'); horn(1.5); }
+  if (t >= LS && !fxOn) {
+    if (jp > .55 && !fired.has('h' + ji)) { fired.add('h' + ji); horn(1.2); }
+    if (jp >= .99 && !fired.has('d' + ji)) { fired.add('d' + ji); ding(); }
+  }
+}
+
+/* ---------- main loop ---------- */
+function loop(now) {
+  const dt = Math.min(.1, (now - last) / 1000); last = now;
+  if (!paused) fb += dt;
+  const T = Math.max(40, CONFIG.journeySec);
+  const t = fb;
+  const LS = CONFIG.loaderSec;
+
+  $('#loader').classList.toggle('on', t < LS);
+  $('#journey').classList.toggle('on', t >= LS - 0.8);
+  if (t < LS + 1) runLoader(t / LS, t);
+  runJourney(Math.max(0, t - LS), T - LS, t);
+  fxDraw();
+  updateSound(t, dt);
+
+  const finished = t >= T - 0.4;
+  $('#replay').classList.toggle('show', finished);
+  requestAnimationFrame(loop);
+}
+
+/* ---------- controls ---------- */
+function toast(msg) { const el = $('#toast'); el.textContent = msg; el.classList.add('show'); setTimeout(() => el.classList.remove('show'), 5200); }
+function isPaused() { return paused; }
+function updBtn() { $('#pauseBtn').textContent = isPaused() ? '▶' : '⏸'; }
+function togglePause() {
+  paused = !paused;
+  updBtn();
+}
+$('#pauseBtn').onclick = togglePause;
+$('#muteBtn').onclick = () => { muted = !muted; $('#muteBtn').textContent = muted ? '🔇' : '🔊'; };
+addEventListener('keydown', e => { if (e.code === 'Space' && running) { e.preventDefault(); togglePause(); } });
+
+function begin() {
+  if (running) return;
+  running = true;
+  $('#gate').classList.remove('on');
+  $('#ctrl').classList.add('on');
+  fb = 0;
+  paused = false;
+  updBtn();
+  last = performance.now();
+  requestAnimationFrame(loop);
+}
+$('#startBtn').onclick = begin;
+$('#slideFullscreen').onclick = async () => {
+  try {
+    if (document.fullscreenElement) await document.exitFullscreen();
+    else await document.documentElement.requestFullscreen();
+  } catch (err) {
+    toast('Fullscreen mode is not available in this browser.');
+  }
+};
+
+$('#replay').onclick = () => {
+  fb = 0; paused = false; curYear = -1; galleryOpen = false; fired.clear(); clackPhase = 0;
+  updBtn();
+  $('#gallery').classList.remove('open');
+  $('#end').classList.remove('on');
+  $('#replay').classList.remove('show');
+};
+
+buildScene();
+setU();
+addEventListener('resize', setU);
+})();
+</script>
+</body>
+</html>
